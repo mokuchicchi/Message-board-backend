@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
@@ -6,7 +7,20 @@ import { PostModule } from './post/post.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [UserModule, PostModule, AuthModule],
+  imports: [
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'localhost',
+      username: 'user',
+      password: 'pass',
+      database: 'message_board_db',
+      autoLoadEntities: true,
+      synchronize: false,
+    }),
+    UserModule,
+    PostModule,
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -1,4 +1,15 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
-export class AuthController {}
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  @Get()
+  async getAuth(
+    @Query('name') name: string,
+    @Query('password') password: string,
+  ) {
+    return await this.authService.getAuth(name, password);
+  }
+}

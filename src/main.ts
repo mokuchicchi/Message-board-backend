@@ -11,6 +11,6 @@ async function bootstrap() {
     credentials: true, // Cookieや認証情報を扱うなら必要
   });
 
-  await app.listen(port, '0.0.0.0');
+  await app.listen(port);
 }
 bootstrap();

@@ -7,7 +7,7 @@ async function bootstrap() {
   const port = process.env.PORT || 3001;
 
   app.enableCors({
-    origin: 'http://localhost:3000', // フロントのURLを指定
+    origin: process.env.FRONT_ADRESS, // フロントのURLを指定
     credentials: true, // Cookieや認証情報を扱うなら必要
   });
 

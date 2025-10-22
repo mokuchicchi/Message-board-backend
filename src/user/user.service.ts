@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { createHash } from 'crypto';
+import { CreateUserDto } from 'src/dto/create-user.dto';
 import { Auth } from 'src/entities/auth.entity';
 import { User } from 'src/entities/user.entity';
 import { Equal, MoreThan, Repository } from 'typeorm';
@@ -18,21 +19,27 @@ export class UserService {
     private authRepository: Repository<Auth>,
   ) {}
 
-  async createUser(name: string, email: string, password: string) {
-    const hash = createHash('md5').update(password).digest('hex');
+  async createUser(createUserDto: CreateUserDto) {
+    const hash = createHash('md5').update(createUserDto.password).digest('hex');
     const record = {
-      name: name,
-      email: email,
+      name: createUserDto.name,
+      email: createUserDto.email,
       hash: hash,
     };
-    await this.userRepository.save(record);
+    const saved = await this.userRepository.save(record);
+    return {
+      uuid: saved.uuid,
+      name: saved.name,
+      email: saved.email,
+      hash: saved.hash,
+    };
   }
 
-  async getUser(id: number, token: string) {
+  async getUser(uuid: string, token: string) {
     // ログイン済みチェック
     const now = new Date();
     const auth = await this.authRepository.findOne({
-      where: { token: Equal(token), expire_at: MoreThan(now) },
+      where: { token: Equal(token), expireAt: MoreThan(now) },
     });
     if (!auth) {
       throw new ForbiddenException();
@@ -40,7 +47,7 @@ export class UserService {
 
     // ユーザー情報を取得
     const user = await this.userRepository.findOne({
-      where: { id: Equal(id) },
+      where: { uuid: Equal(uuid) },
     });
     if (!user) {
       throw new NotFoundException();

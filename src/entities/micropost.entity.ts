@@ -4,22 +4,23 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  Generated,
 } from 'typeorm';
 
-@Entity()
+@Entity('post')
 export class MicroPost {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'int' })
   readonly id: number;
 
-  @Column()
-  user_id: number;
+  @Column({ type: 'uuid' })
+  uuid: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 500, default: '' })
   content: string;
 
-  @CreateDateColumn()
-  readonly created_at?: Date;
+  @CreateDateColumn({ type: 'timestamp' })
+  readonly createdAt?: Date;
 
-  @UpdateDateColumn()
-  readonly updated_at?: Date;
+  @UpdateDateColumn({ type: 'timestamp' })
+  readonly updatedAt?: Date;
 }

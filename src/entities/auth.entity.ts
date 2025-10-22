@@ -4,25 +4,26 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  Generated,
 } from 'typeorm';
 
-@Entity()
+@Entity('auth')
 export class Auth {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'int' })
   readonly id: number;
 
-  @Column()
-  user_id: number;
+  @Column({ type: 'uuid' })
+  uuid: string;
 
   @Column('varchar')
   token: string;
 
-  @Column()
-  expire_at: Date;
+  @Column({ type: 'timestamp' })
+  expireAt: Date;
 
-  @CreateDateColumn()
-  readonly created_at?: Date;
+  @CreateDateColumn({ type: 'timestamp' })
+  readonly createdAt?: Date;
 
-  @UpdateDateColumn()
-  readonly updated_at?: Date;
+  @UpdateDateColumn({ type: 'timestamp' })
+  readonly updatedAt?: Date;
 }

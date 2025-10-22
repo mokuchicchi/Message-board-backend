@@ -4,25 +4,30 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  Generated,
 } from 'typeorm';
 
-@Entity()
+@Entity('user')
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'int' })
   readonly id: number;
 
-  @Column('varchar')
+  @Column({ type: 'uuid', unique: true })
+  @Generated('uuid')
+  uuid: string;
+
+  @Column({ type: 'varchar', length: 50, default: '' })
   name: string;
 
-  @Column('varchar')
-  hash: string;
-
-  @Column('varchar')
+  @Column({ type: 'varchar', length: 255, unique: true, default: '' })
   email: string;
 
-  @CreateDateColumn()
-  readonly created_at?: Date;
+  @Column({ type: 'varchar', length: 255, default: '' })
+  hash: string;
 
-  @UpdateDateColumn()
-  readonly updated_at?: Date;
+  @CreateDateColumn({ type: 'timestamp' })
+  readonly createdAt?: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  readonly updatedAt?: Date;
 }

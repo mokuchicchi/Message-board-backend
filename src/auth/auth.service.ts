@@ -15,8 +15,11 @@ export class AuthService {
   ) {}
 
   async getAuth(name: string, password: string) {
+    if (!name) {
+      throw new UnauthorizedException('名前を入力してください');
+    }
     if (!password) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('パスワードを入力してください');
     }
 
     const hash = crypto.createHash('md5').update(password).digest('hex');
@@ -25,32 +28,32 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('パスワードが異なります');
     }
 
     const ret = {
+      uuid: user.uuid,
       token: '',
-      user_id: user.id,
     };
 
     let expire = new Date();
     expire.setDate(expire.getDate() + 1);
     const auth = await this.authRepository.findOne({
-      where: { user_id: Equal(user.id) },
+      where: { uuid: Equal(user.uuid) },
     });
 
     if (auth) {
       // 更新
-      auth.expire_at = expire;
+      auth.expireAt = expire;
       await this.authRepository.save(auth);
       ret.token = auth.token;
     } else {
       // 新規作成
       const token = crypto.randomUUID();
       const record = {
-        user_id: user.id,
+        uuid: user.uuid,
         token: token,
-        expire_at: expire.toISOString(),
+        expireAt: expire.toISOString(),
       };
       await this.authRepository.save(record);
       ret.token = token;

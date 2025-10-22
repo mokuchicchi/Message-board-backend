@@ -13,27 +13,32 @@ export class PostService {
     private readonly authRepository: Repository<Auth>,
   ) {}
 
-  async createPost(message: string, token: string) {
+  async createPost(token: string, message: string) {
     // ログイン済みかチェック
     const now = new Date();
     const auth = await this.authRepository.findOne({
-      where: { token: Equal(token), expire_at: MoreThan(now) },
+      where: { token: Equal(token), expireAt: MoreThan(now) },
     });
     if (!auth) {
       throw new ForbiddenException();
     }
 
     const record = {
-      user_id: auth.user_id,
+      uuid: auth.uuid,
       content: message,
     };
-    await this.microPostsRepository.save(record);
+    const saved = await this.microPostsRepository.save(record);
+
+    return {
+      uuid: saved.uuid,
+      content: saved.content,
+    };
   }
 
   async getList(token: string, start: number = 0, nr_records: number = 1) {
     const now = new Date();
     const auth = await this.authRepository.findOne({
-      where: { token: Equal(token), expire_at: MoreThan(now) },
+      where: { token: Equal(token), expireAt: MoreThan(now) },
     });
     if (!auth) {
       throw new ForbiddenException();
@@ -41,25 +46,24 @@ export class PostService {
 
     const qb = await this.microPostsRepository
       .createQueryBuilder('micro_post')
-      .leftJoinAndSelect('user', 'user', 'user.id=micro_post.user_id')
+      .leftJoinAndSelect('user', 'user', 'user.uuid=micro_post.uuid')
       .select([
         'micro_post.id as id',
-        'user.name as user_name',
+        'user.name as userName',
         'micro_post.content as content',
-        'micro_post.created_at as created_at',
+        'micro_post.createdAt as createdAt',
       ])
-      .orderBy('micro_post.created_at', 'DESC')
+      .orderBy('micro_post.createdAt', 'DESC')
       .offset(start)
       .limit(nr_records);
 
     type ResultType = {
       id: number;
+      userName: string;
       content: string;
-      user_name: string;
-      created_at: Date;
+      createdAt: Date;
     };
     const records = await qb.getRawMany<ResultType>();
-    console.log(records);
 
     return records;
   }

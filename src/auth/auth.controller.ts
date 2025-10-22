@@ -7,7 +7,7 @@ export class AuthController {
 
   @Get()
   async getAuth(
-    @Query('user_id') name: string,
+    @Query('name') name: string,
     @Query('password') password: string,
   ) {
     return await this.authService.getAuth(name, password);

@@ -7,10 +7,10 @@ export class PostController {
 
   @Post()
   async createPost(
-    @Body('message') message: string,
     @Query('token') token: string,
+    @Body('message') message: string,
   ) {
-    return await this.postService.createPost(message, token);
+    return await this.postService.createPost(token, message);
   }
 
   @Get()

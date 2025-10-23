@@ -49,6 +49,7 @@ export class PostService {
       .leftJoinAndSelect('user', 'user', 'user.uuid=micro_post.uuid')
       .select([
         'micro_post.id as id',
+        'user.uuid as uuid',
         'user.name as userName',
         'micro_post.content as content',
         'micro_post.createdAt as createdAt',
@@ -59,6 +60,7 @@ export class PostService {
 
     type ResultType = {
       id: number;
+      uuid: string;
       userName: string;
       content: string;
       createdAt: Date;
@@ -66,5 +68,19 @@ export class PostService {
     const records = await qb.getRawMany<ResultType>();
 
     return records;
+  }
+
+  async deletePost(token: string, id: number) {
+    const now = new Date();
+    const auth = await this.authRepository.findOne({
+      where: { token: Equal(token), expireAt: MoreThan(now) },
+    });
+    if (!auth) {
+      throw new ForbiddenException();
+    }
+
+    await this.microPostsRepository.delete(id);
+
+    return { message: 'Post deleted successfully' };
   }
 }

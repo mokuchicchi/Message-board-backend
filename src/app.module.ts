@@ -6,6 +6,7 @@ import { UserModule } from './user/user.module';
 import { PostModule } from './post/post.module';
 import { AuthModule } from './auth/auth.module';
 import * as dotenv from 'dotenv';
+import { UniqueValidator } from './validators/unique.validator';
 
 dotenv.config();
 
@@ -25,6 +26,6 @@ dotenv.config();
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, UniqueValidator],
 })
 export class AppModule {}

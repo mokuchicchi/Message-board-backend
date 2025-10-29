@@ -4,6 +4,7 @@ import { Equal, Repository } from 'typeorm';
 import { User } from 'src/entities/user.entity';
 import { Auth } from 'src/entities/auth.entity';
 import * as crypto from 'crypto';
+import { addDays } from 'date-fns';
 
 @Injectable()
 export class AuthService {
@@ -36,8 +37,7 @@ export class AuthService {
       token: '',
     };
 
-    let expire = new Date();
-    expire.setDate(expire.getDate() + 1);
+    const expire = addDays(new Date(), 1);
     const auth = await this.authRepository.findOne({
       where: { uuid: Equal(user.uuid) },
     });
